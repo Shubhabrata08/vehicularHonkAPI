@@ -17,3 +17,5 @@ class ImageUploadSerializer(serializers.Serializer):
         
         # Return the processed image data or any other response you need
         return {'message': 'Image uploaded successfully'}
+
+

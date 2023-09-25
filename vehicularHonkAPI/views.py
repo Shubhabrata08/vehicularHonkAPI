@@ -9,7 +9,8 @@ from tensorflow.keras.layers import Input, Conv2D, MaxPooling2D, Flatten, Dense,
 from tensorflow.keras.models import Model
 from rest_framework import status
 from .models import ImageUploadSerializer  # Import your serializer
-
+from PIL import Image
+import numpy as np
 # Create your views here.
 
 def createModel():
@@ -66,17 +67,20 @@ model=createModel()
 
 @api_view(['POST'])
 def predictHonk(request):
-    # model.predict()
-    # print(request.POST)
     serializer = ImageUploadSerializer(data=request.data)
     if serializer.is_valid():
-        print(request.data)
-        return JsonResponse({"state":"Success"})
+        print(request.data['image'])
+        receivedImage=request.FILES.get('image')
+        renderedImg=Image.open(receivedImage)
+        renderedImg.save('image.jpg')
+        modelInput=np.array(renderedImg)
+        print(modelInput.shape)
+        prediction=model.predict(np.array([modelInput]))
+        audioClass=-1
+        for i in range(len(prediction[0])):
+            if prediction[0][i]==1:
+                audioClass=i
+        return JsonResponse({"state":str(audioClass)})
     return JsonResponse({"state":"Failure"})
     
-        
 
-def predictClass():
-    audioClass=0
-    
-    return audioClass
