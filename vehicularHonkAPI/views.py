@@ -7,6 +7,9 @@ import os
 from vehicularHonk.settings import BASE_DIR
 from tensorflow.keras.layers import Input, Conv2D, MaxPooling2D, Flatten, Dense,Dropout,BatchNormalization
 from tensorflow.keras.models import Model
+from rest_framework import status
+from .models import ImageUploadSerializer  # Import your serializer
+
 # Create your views here.
 
 def createModel():
@@ -60,9 +63,18 @@ def createModel():
 
 model=createModel()
 
+
 @api_view(['POST'])
-def modelTest(request):
-    return JsonResponse({"state":"Success"})
+def predictHonk(request):
+    # model.predict()
+    # print(request.POST)
+    serializer = ImageUploadSerializer(data=request.data)
+    if serializer.is_valid():
+        print(request.data)
+        return JsonResponse({"state":"Success"})
+    return JsonResponse({"state":"Failure"})
+    
+        
 
 def predictClass():
     audioClass=0
