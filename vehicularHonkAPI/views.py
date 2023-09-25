@@ -59,7 +59,7 @@ def createModel():
         optimizer=tf.keras.optimizers.Adam(learning_rate=3e-4),
         metrics=["accuracy"]
     )
-    model.load_weights(os.path.join(BASE_DIR,f"vehicularHonkAPI\patchedModels\patched{num_patches}weights.h5"))
+    model.load_weights(os.path.join(BASE_DIR,f"vehicularHonkAPI/patchedModels/patched{num_patches}weights.h5"))
     return model
 
 model=createModel()
