@@ -81,6 +81,7 @@ def predictHonk(request):
     if patchNumber=="8":
         prediction=model8.predict(np.array([modelInput]))
     elif patchNumber=="16":
+        print("Model16")
         prediction=model16.predict(np.array([modelInput]))
     elif patchNumber=="32":
         prediction=model32.predict(np.array([modelInput]))
