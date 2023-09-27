@@ -13,9 +13,8 @@ from PIL import Image
 import numpy as np
 # Create your views here.
 
-def createModel():
+def createModel(num_patches:int=1):
     image_size = 224  # We'll resize input images to this size
-    num_patches = 8
     patch_size =224//num_patches   # Size of the patches to be extract from the input images
     input_shape=(224,224,3)
     # Input dimensions
@@ -62,25 +61,37 @@ def createModel():
     model.load_weights(os.path.join(BASE_DIR,f"vehicularHonkAPI/patchedModels/patched{num_patches}weights.h5"))
     return model
 
-model=createModel()
+model1=createModel(1)
+model8=createModel(8)
+model16=createModel(16)
+model32=createModel(32)
+
 
 
 @api_view(['POST'])
 def predictHonk(request):
-    serializer = ImageUploadSerializer(data=request.data)
-    if serializer.is_valid():
-        print(request.data['image'])
-        receivedImage=request.FILES.get('image')
-        renderedImg=Image.open(receivedImage)
-        renderedImg.save('image.jpg')
-        modelInput=np.array(renderedImg)
-        print(modelInput.shape)
-        prediction=model.predict(np.array([modelInput]))
-        audioClass=-1
-        for i in range(len(prediction[0])):
-            if prediction[0][i]==1:
-                audioClass=i
-        return JsonResponse({"state":str(audioClass)})
+    # if serializer.is_valid():
+    patchNumber=request.data['patchNumber']
+    receivedImage=request.FILES.get('image')
+    renderedImg=Image.open(receivedImage)
+    renderedImg.save('image.jpg')
+    modelInput=np.array(renderedImg)
+    # print(modelInput.shape)
+    global prediction
+    if patchNumber=="8":
+        prediction=model8.predict(np.array([modelInput]))
+    elif patchNumber=="16":
+        prediction=model16.predict(np.array([modelInput]))
+    elif patchNumber=="32":
+        prediction=model32.predict(np.array([modelInput]))
+    else:
+        prediction=model1.predict(np.array([modelInput]))
+    audioClass=-1
+    for i in range(len(prediction[0])):
+        if prediction[0][i]==1:
+            audioClass=i
+    return JsonResponse({"state":str(audioClass)})
     return JsonResponse({"state":"Failure"})
+    
     
 
